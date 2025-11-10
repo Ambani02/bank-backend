@@ -21,8 +21,6 @@ steps:
       "--image","us-central1-docker.pkg.dev/gcp-class-17/bank-backend/backend-image:${SHORT_SHA}",
       "--region","us-central1",
       "--allow-unauthenticated",
-      "--port","8080",
-      "--set-env-vars","PORT=8080"
     ]
 
 #change again
