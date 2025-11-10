@@ -2,25 +2,23 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 steps:
-  - name: "gcr.io/cloud-builders/docker"
+  - name: gcr.io/cloud-builders/docker
     args: [
       "build",
       "-t", "us-central1-docker.pkg.dev/gcp-class-17/bank-backend/backend-image:${SHORT_SHA}",
       "."
     ]
 
-  - name: "gcr.io/cloud-builders/docker"
+  - name: gcr.io/cloud-builders/docker
     args: [
       "push",
       "us-central1-docker.pkg.dev/gcp-class-17/bank-backend/backend-image:${SHORT_SHA}"
     ]
 
-  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     args: [
       "gcloud","run","deploy","bank-backend",
       "--image","us-central1-docker.pkg.dev/gcp-class-17/bank-backend/backend-image:${SHORT_SHA}",
       "--region","us-central1",
-      "--allow-unauthenticated",
+      "--allow-unauthenticated"
     ]
-
-#change again
