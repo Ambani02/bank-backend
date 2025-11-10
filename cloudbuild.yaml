@@ -1,60 +1,24 @@
-logsBucket: "gs://gcp-class-17-cloudbuild-logs"
 steps:
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us-central1-docker.pkg.dev/gcp-class-17/backend/backend-image', '.']
-
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us-central1-docker.pkg.dev/gcp-class-17/backend/backend-image']
-
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  - name: "gcr.io/cloud-builders/docker"
     args: [
-      'gcloud', 'run', 'deploy', 'bank-backend',
-      '--image', 'us-central1-docker.pkg.dev/gcp-class-17/backend/backend-image',
-      '--region', 'us-central1',
-      '--allow-unauthenticated'
+      "build",
+      "-t", "us-central1-docker.pkg.dev/gcp-class-17/backend/backend-image",
+      "."
     ]
 
-substitutions:
-  
-  _REGION: us-central1        
-  _LOCATION: us-central1       
-  _AR_REPO: bank-backend        
-  _IMAGE: backend            
-  _SERVICE: bank-backend        
-  _PORT: '8080'                 
-  _TAG: '${SHORT_SHA}'          
+  - name: "gcr.io/cloud-builders/docker"
+    args: [
+      "push",
+      "us-central1-docker.pkg.dev/gcp-class-17/backend/backend-image"
+    ]
 
-steps:
-  - id: build-image
-    name: gcr.io/cloud-builders/docker
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     args:
       [
-        'build',
-        '-t','${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:${_TAG}',
-        '.'
+        "gcloud", "run", "deploy", "bank-backend",
+        "--image", "us-central1-docker.pkg.dev/gcp-class-17/backend/backend-image",
+        "--region", "us-central1",
+        "--allow-unauthenticated",
+        "--port", "8080",
+        "--set-env-vars", "PORT=8080"
       ]
-
-  - id: push-image
-    name: gcr.io/cloud-builders/docker
-    args:
-      [
-        'push',
-        '${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:${_TAG}'
-      ]
-
-  - id: deploy-to-cloud-run
-    name: gcr.io/google.com/cloudsdktool/cloud-sdk
-    entrypoint: bash
-    args:
-      - -c
-      - |
-        gcloud run deploy "${_SERVICE}" \
-          --image "${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:${_TAG}" \
-          --region "${_REGION}" \
-          --platform managed \
-          --allow-unauthenticated \
-          --port "${_PORT}" \
-          --set-env-vars "PORT=${_PORT}"
-
-
-# change again 
