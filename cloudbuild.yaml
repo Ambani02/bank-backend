@@ -5,20 +5,20 @@ steps:
   - name: "gcr.io/cloud-builders/docker"
     args: [
       "build",
-      "-t", "us-central1-docker.pkg.dev/gcp-class-17/backend/backend-image",
+      "-t", "us-central1-docker.pkg.dev/gcp-class-17/bank-backend/backend-image:${SHORT_SHA}",
       "."
     ]
 
   - name: "gcr.io/cloud-builders/docker"
     args: [
       "push",
-      "us-central1-docker.pkg.dev/gcp-class-17/backend/backend-image"
+      "us-central1-docker.pkg.dev/gcp-class-17/bank-backend/backend-image:${SHORT_SHA}"
     ]
 
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     args: [
       "gcloud","run","deploy","bank-backend",
-      "--image","us-central1-docker.pkg.dev/gcp-class-17/backend/backend-image",
+      "--image","us-central1-docker.pkg.dev/gcp-class-17/bank-backend/backend-image:${SHORT_SHA}",
       "--region","us-central1",
       "--allow-unauthenticated",
       "--port","8080",
