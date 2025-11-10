@@ -1,0 +1,42 @@
+
+substitutions:
+  
+  _REGION: us-central1        
+  _LOCATION: us-central1       
+  _AR_REPO: bank-backend        
+  _IMAGE: backend            
+  _SERVICE: bank-backend        
+  _PORT: '8080'                 
+  _TAG: '${SHORT_SHA}'          
+
+steps:
+  - id: build-image
+    name: gcr.io/cloud-builders/docker
+    args:
+      [
+        'build',
+        '-t','${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:${_TAG}',
+        '.'
+      ]
+
+  - id: push-image
+    name: gcr.io/cloud-builders/docker
+    args:
+      [
+        'push',
+        '${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:${_TAG}'
+      ]
+
+  - id: deploy-to-cloud-run
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        gcloud run deploy "${_SERVICE}" \
+          --image "${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:${_TAG}" \
+          --region "${_REGION}" \
+          --platform managed \
+          --allow-unauthenticated \
+          --port "${_PORT}" \
+          --set-env-vars "PORT=${_PORT}"
